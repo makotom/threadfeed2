@@ -151,5 +151,5 @@
 	};
 
 	loadBBSMenu();
-	setInterval(loadBBSMenu, 300 * 1000);
+	setInterval(loadBBSMenu, 900 * 1000);
 })();
