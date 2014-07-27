@@ -132,7 +132,7 @@
 	};
 
 	String.prototype.toXMLSafeString = function () {
-		return this.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+		return this.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 	};
 
 	exports.exec = function (IO) {
