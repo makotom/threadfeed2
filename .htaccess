@@ -1,0 +1,4 @@
+RewriteOptions Inherit
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^/]+)(?:/(?:([^/]+)(?:/([^/+]+)?)?)?)?$ scripts/core.njs?b=$1&f=$2&n=$3 [L,QSA]

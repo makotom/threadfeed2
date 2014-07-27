@@ -1,0 +1,3 @@
+RewriteOptions Inherit
+RewriteCond %{REQUEST_FILENAME} !core.njs$
+RewriteRule . - [F,L]
