@@ -9,22 +9,39 @@
 		"atom1" : "application/atom+xml"
 	},
 
-	bbsmenu = "",
+	boards = {},
 
 	iconvSJ2U8 = require("iconv").Iconv("SHIFT_JIS", "UTF-8//IGNORE"),
+
+	parseBBSMenu = function (bbsmenu) {
+		var ret = {},
+		hrefRegExp = /<a href=(http:\/\/([^ \/.]+)\.2ch\.net\/([^ \/.]+)\/)>([^<]+)<\/a>/i,
+		toParse = bbsmenu;
+
+		for (let hrefMatch; hrefMatch = hrefRegExp.exec(toParse);) {
+			ret[hrefMatch[3]] = {
+				server : hrefMatch[2],
+				board : hrefMatch[3],
+				name : hrefMatch[4],
+				url : hrefMatch[1]
+			};
+
+			toParse = hrefMatch.input.substr(hrefMatch.index + hrefMatch[0].length);
+		}
+
+		return ret;
+	},
 
 	loadBBSMenu = function () {
 		require("http").get("http://menu.2ch.net/bbsmenu.html", function (res) {
 			var chunks = [];
-
-			bbsmenu = "";
 
 			res.on("data", function (chunk) {
 				chunks.push(chunk);
 			});
 
 			res.on("end", function () {
-				bbsmenu = iconvSJ2U8.convert(Buffer.concat(chunks)).toString();
+				boards = parseBBSMenu(iconvSJ2U8.convert(Buffer.concat(chunks)).toString());
 			});
 		});
 
@@ -41,8 +58,13 @@
 	},
 
 	paramCheck = function (IO) {
-		if (! IO.request.formData.GET.b || /[^0-9a-z]/i.test(IO.request.formData.GET.b)) {
-			endWithError(IO, 400, "Malformed mandatory parameters.");
+		if (! IO.request.formData.GET.b) {
+			endWithError(IO, 400, "Missing mandatory parameter.");
+			return false;
+		}
+
+		if (boards[IO.request.formData.GET.b] === undefined) {
+			endWithError(IO, 404, "Board not found.");
 			return false;
 		}
 
@@ -57,16 +79,6 @@
 		}
 
 		return true;
-	},
-
-	getBoardMeta = function (brd) {
-		var match = new RegExp("(http:\\/\\/([^\\/.]+)\\.2ch\\.net/" + brd + "\\/)[^>]*>([^<]+)<\\/a>", "i").exec(bbsmenu) || [];
-		return match ? {
-			server : match[2],
-			board : brd,
-			name : match[3],
-			url : match[1]
-		} : null;
 	},
 
 	buildBoardInfo = function (subjectTxt, boardMeta, env, limit) {
@@ -99,7 +111,7 @@
 			boardURL : encodeURI(boardMeta.url).toXMLSafeString(),
 			boardName : boardMeta.name.toXMLSafeString(),
 			threads : threads
-		}
+		};
 	},
 
 	respondFeed = function (IO) {
@@ -107,7 +119,7 @@
 		format = feedTypes[IO.request.formData.GET.f] ? IO.request.formData.GET.f : "atom1",
 		limit = Math.min(parseInt(IO.request.formData.GET.n, 10), 200) || 100,
 
-		boardMeta = getBoardMeta(brd);
+		boardMeta = boards[brd];
 
 		require("http").get(
 			boardMeta.url + "/subject.txt",
@@ -136,14 +148,9 @@
 	};
 
 	exports.exec = function (IO) {
-		if (bbsmenu === "") {
+		if (boards === null) {
 			setImmediate(exports.exec.bind(exports, IO));
 		} else if (paramCheck(IO)) {
-			if (getBoardMeta(IO.request.formData.GET.b) === null) {
-				endWithError(IO, 404, "Board not found.");
-				return;
-			}
-
 			respondFeed(IO);
 		}
 
