@@ -1,4 +1,4 @@
-Threadfeed
+ThreadFeed
 ==========
 
 2ch BSS for feed readers
