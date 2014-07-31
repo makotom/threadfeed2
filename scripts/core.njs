@@ -91,6 +91,10 @@
 			datID = parseInt(dat.match(/\d+/)[0], 10),
 			title = parts.join("<>").replace(/\(\d+\)$/, "").trim();
 
+			if (isNaN(datID) || title === "") {
+				continue;
+			}
+
 			if (datID > 2147483647) {
 				continue;
 			}
