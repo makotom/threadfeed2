@@ -9,7 +9,7 @@
 		"atom1" : "application/atom+xml"
 	},
 
-	boards = {},
+	boards = null,
 
 	iconvSJ2U8 = require("iconv").Iconv("SHIFT_JIS", "UTF-8//IGNORE"),
 
