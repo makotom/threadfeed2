@@ -18,7 +18,7 @@
 		hrefRegExp = /<a href=(http:\/\/([^ \/.]+)\.2ch\.net\/([^ \/.]+)\/)>([^<]+)<\/a>/i,
 		toParse = bbsmenu;
 
-		for (let hrefMatch; hrefMatch = hrefRegExp.exec(toParse);) {
+		for (let hrefMatch; (hrefMatch = hrefRegExp.exec(toParse));) {
 			ret[hrefMatch[3]] = {
 				server : hrefMatch[2],
 				board : hrefMatch[3],
