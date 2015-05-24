@@ -89,7 +89,7 @@
 			let parts = subjectRows[i].split("<>"),
 			dat = parts.shift(),
 			datID = parseInt(dat.match(/\d+/)[0], 10),
-			title = parts.join("<>").replace(/\(\d+\)$/, "").trim();
+			title = parts.join("<>").replace(/\(\d+\)$/, "").trim().replace(/&copy;2ch.net$/, "").trim().replace(/\[[^\]]+\]$/, "").trim();
 
 			if (isNaN(datID) || title === "") {
 				continue;
