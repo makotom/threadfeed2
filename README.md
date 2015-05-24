@@ -7,4 +7,4 @@ ThreadFeed
 * See [the demonstration](http://nl1.makotom.com/threadfeed2/).
 
 ---
-Copyright (C) 2010-2014 Makoto Mizukami
+Copyright (C) 2010-2015 Makoto Mizukami
